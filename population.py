@@ -11,7 +11,10 @@ class Population:
         self.cost_matrix = []
         self.rows_encoder = {1: 0,
                              2: 1,
-                             5: 2}
+                             5: 2,
+                             10: 3,
+                             20: 4,
+                             50: 5}
 
     def calculate_changes_for_genotypes(self, available_values):
         for specimen in self.population:
@@ -49,23 +52,32 @@ class Population:
         counter = 0
         for i in range(round(len(self.sorted_population) / 2)):
             for j in range(i + 1, round(len(self.sorted_population) / 2)):
-                for k in range(9):
+                for k in range(18):
                     if self.sorted_population[i].genotype_matrix[self.rows_encoder[coin_to_save]][k] > self.sorted_population[j].genotype_matrix[self.rows_encoder[coin_to_save]][k]:
-                        self.population[counter].genotype_matrix[self.rows_encoder[1]][k] = \
-                            self.sorted_population[j].genotype_matrix[self.rows_encoder[1]][k]
-                        self.population[counter].genotype_matrix[self.rows_encoder[2]][k] = \
-                            self.sorted_population[j].genotype_matrix[self.rows_encoder[2]][k]
-                        self.population[counter].genotype_matrix[self.rows_encoder[5]][k] = \
-                            self.sorted_population[j].genotype_matrix[self.rows_encoder[5]][k]
+                        for m in range(6):
+                            self.population[counter].genotype_matrix[m][k] = self.sorted_population[j].genotype_matrix[m][k]
                     else:
-                        self.population[counter].genotype_matrix[self.rows_encoder[1]][k] = \
-                            self.sorted_population[i].genotype_matrix[self.rows_encoder[1]][k]
-                        self.population[counter].genotype_matrix[self.rows_encoder[2]][k] = \
-                            self.sorted_population[i].genotype_matrix[self.rows_encoder[2]][k]
-                        self.population[counter].genotype_matrix[self.rows_encoder[5]][k] = \
-                            self.sorted_population[i].genotype_matrix[self.rows_encoder[5]][k]
+                        for m in range(6):
+                            self.population[counter].genotype_matrix[m][k] = self.sorted_population[i].genotype_matrix[m][k]
                 counter += 1
         np.random.shuffle(self.population)
         self.population = self.population[0:amount_of_species]
 
+#TODO
+#when coin to save = 1, while loop never stops for example for value_to_exchange = 21 when we randomly take 4x5 and now we need just 1 (21-20=1)
+    def mutate(self, coin_to_save, available_values):
+        random_specimen = np.random.choice(self.population)
+        random_col = np.random.choice(range(random_specimen.number_of_ways_to_give_change))
+        amount_of_coins_which_are_supposed_to_be_saved = random_specimen.genotype_matrix[self.rows_encoder[coin_to_save]][random_col]
+        value_to_exchange = amount_of_coins_which_are_supposed_to_be_saved * coin_to_save
+        available_values_without_coin_to_save = list(available_values)
+        available_values_without_coin_to_save.remove(coin_to_save)
+
+        temp = 0
+        while temp != value_to_exchange:
+            generated_value = np.random.choice(available_values_without_coin_to_save)
+            if temp + generated_value <= value_to_exchange:
+                temp = temp + generated_value
+                random_specimen.genotype_matrix[self.rows_encoder[generated_value]][random_col] += 1
+        random_specimen.genotype_matrix[self.rows_encoder[coin_to_save]][random_col] = 0
 
