@@ -16,7 +16,7 @@ class Population:
                              20: 4,
                              50: 5}
 
-    def calculate_changes_for_genotypes(self, available_values):
+    def calculate_changes_for_specimens(self, available_values):
         for specimen in self.population:
             specimen.calculate_change_randomly(self.statistical_day, available_values)
 
@@ -36,13 +36,10 @@ class Population:
         for specimen in self.population:
             specimen.calculate_cost(coin_to_save)
 
-    def calculate_cost_for_sorted_population(self, coin_to_save):
+    def calculate_cost_matrix_for_sorted_population(self):
         self.cost_matrix = []
         for specimen in self.sorted_population:
-            self.cost_matrix.append(specimen.calculate_cost(coin_to_save))
-
-    def lowest_cost(self):
-        return min(self.cost_matrix)
+            self.cost_matrix.append(specimen.cost)
 
     def rank(self):
         self.sorted_population = sorted(self.population, key=lambda x: x.cost)
@@ -79,5 +76,6 @@ class Population:
             if temp + generated_value <= value_to_exchange:
                 temp = temp + generated_value
                 random_specimen.genotype_matrix[self.rows_encoder[generated_value]][random_col] += 1
+
         random_specimen.genotype_matrix[self.rows_encoder[coin_to_save]][random_col] = 0
 

@@ -34,7 +34,6 @@ class Genotype:
                         90: 17}
 
     def calculate_change_randomly(self, statistical_day, available_values):
-
         for value_to_divide in statistical_day:
             unity, tens = 0, 0
             if value_to_divide > 9:
@@ -42,6 +41,7 @@ class Genotype:
                 tens = int(value_to_divide / 10) * 10
             else:
                 unity = value_to_divide
+
             temp = 0
             if value_to_divide > 9:
                 while temp != tens:
@@ -56,8 +56,6 @@ class Genotype:
                 if temp + generated_value <= unity:
                     temp = temp + generated_value
                     self.genotype_matrix[self.rows_encoder[generated_value]][self.cols_encoder[unity]] += 1
-
-
 
     def calculate_cost(self, coin_to_save):
         self.cost = sum(self.genotype_matrix[self.rows_encoder[coin_to_save]])
