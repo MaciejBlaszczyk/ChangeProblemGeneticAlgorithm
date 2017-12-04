@@ -1,5 +1,6 @@
 from genotype import Genotype
 import numpy as np
+from cross_operator import cross_mc
 
 
 class Population:
@@ -32,9 +33,9 @@ class Population:
             print("cost:", specimen.cost)
             print("")
 
-    def calculate_cost(self, coin_to_save):
+    def calculate_cost(self, coin_to_save, quantity_of_coins,expected_quantity_of_coins):
         for specimen in self.population:
-            specimen.calculate_cost(coin_to_save)
+            specimen.calculate_cost(coin_to_save, quantity_of_coins,expected_quantity_of_coins)
 
     def calculate_cost_matrix_for_sorted_population(self):
         self.cost_matrix = []
@@ -43,6 +44,19 @@ class Population:
 
     def rank(self):
         self.sorted_population = sorted(self.population, key=lambda x: x.cost)
+
+    def cross(self, coin_to_save, amount_of_species):
+        young_population = Population(self.quantity,self.statistical_day)
+        for i in range(amount_of_species-1):
+            young_population.population[i] = cross_mc(self.population[i], self.population[i+1])
+
+        self.population = young_population.population
+
+
+
+
+
+'''
 
     def cross(self, coin_to_save, amount_of_species):
         self.population = [Genotype() for _ in range(round((amount_of_species / 4) * ((amount_of_species / 2) - 1)))]
@@ -59,6 +73,10 @@ class Population:
                 counter += 1
         np.random.shuffle(self.population)
         self.population = self.population[0:amount_of_species]
+
+
+
+
 
 #TODO
 #when coin to save = 1, while loop never stops for example for value_to_exchange = 21 when we randomly take 4x5 and now we need just 1 (21-20=1)
@@ -78,4 +96,6 @@ class Population:
                 random_specimen.genotype_matrix[self.rows_encoder[generated_value]][random_col] += 1
 
         random_specimen.genotype_matrix[self.rows_encoder[coin_to_save]][random_col] = 0
+
+'''
 

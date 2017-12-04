@@ -57,8 +57,13 @@ class Genotype:
                     temp = temp + generated_value
                     self.genotype_matrix[self.rows_encoder[generated_value]][self.cols_encoder[unity]] += 1
 
-    def calculate_cost(self, coin_to_save):
-        self.cost = sum(self.genotype_matrix[self.rows_encoder[coin_to_save]])
+    def calculate_cost(self, coin_to_save, quantity_of_coins,expected_quantity_of_coins):
+        value_of_rows = np.zeros(quantity_of_coins)
+        difference = np.zeros(quantity_of_coins)
+        for i in range(quantity_of_coins):
+            value_of_rows[i] = sum(self.genotype_matrix[self.rows_encoder[coin_to_save[i]]])
+            difference[i]=value_of_rows[i]-expected_quantity_of_coins[i]
+        self.cost = sum(difference)
         return self.cost
 
 
