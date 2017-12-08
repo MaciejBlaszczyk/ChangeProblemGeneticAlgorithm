@@ -62,10 +62,7 @@ class Genotype:
         difference = np.zeros(quantity_of_coins)
         for i in range(quantity_of_coins):
             value_of_rows[i] = sum(self.genotype_matrix[self.rows_encoder[coin_to_save[i]]])
-            if value_of_rows[i] < expected_quantity_of_coins[i]:
-                difference[i] = 0
-            else:
-                difference[i] = value_of_rows[i] - expected_quantity_of_coins[i]
+            difference[i] = abs(value_of_rows[i] - expected_quantity_of_coins[i])
         self.cost = sum(difference)
         return self.cost
 

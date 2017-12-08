@@ -1,6 +1,7 @@
 from genotype import Genotype
 import numpy as np
 from cross_operator import cross_mc
+from mutation_operator import mutation_mc
 
 
 class Population:
@@ -46,16 +47,19 @@ class Population:
         self.sorted_population = sorted(self.population, key=lambda x: x.cost)
 
 
-    def cross(self, amount_of_species):
+
+    def cross(self):
         young_population = Population(self.quantity,self.statistical_day)
-        for i in range(amount_of_species):
+        for i in range(self.quantity):
             if (i%2) == 0:
                 young_population.population[i] = cross_mc(self.population[i], self.population[i+1])
                 young_population.population[i+1] = cross_mc(self.population[i+1], self.population[i])
-
-        for i in range (amount_of_species):
+        for i in range (self.quantity):
             self.population[i].genotype_matrix = young_population.population[i].genotype_matrix
 
+    def mutate_mc(self):
+        temp = np.random.choice(self.quantity)
+        mutation_mc(self.population[temp])
 
 
 
