@@ -59,7 +59,8 @@ class Population:
 
     def mutate_mc(self):
         temp = np.random.choice(self.quantity)
-        mutation_mc(self.population[temp])
+        temp2 = np.random.choice(self.quantity)
+        mutation_mc(self.population[temp],self.population[temp2])
 
 
 

@@ -3,7 +3,7 @@ from genotype import Genotype
 import numpy as np
 
 
-amount_of_species = 10
+amount_of_species = 2
 available_values = [1, 2, 5, 10, 20, 50]
 statistical_day = np.random.random_integers(99, size=(10))
 coin_to_save = [2,10]
@@ -26,7 +26,7 @@ print("\n\n")
 
 
 
-for i in range(5):
+for i in range(1):
     population.cross()
     population.mutate_mc()
     population.calculate_cost(coin_to_save, quantity_of_coins,expected_quantity_of_coins)
