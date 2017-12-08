@@ -45,12 +45,17 @@ class Population:
     def rank(self):
         self.sorted_population = sorted(self.population, key=lambda x: x.cost)
 
-    def cross(self, coin_to_save, amount_of_species):
-        young_population = Population(self.quantity,self.statistical_day)
-        for i in range(amount_of_species-1):
-            young_population.population[i] = cross_mc(self.population[i], self.population[i+1])
 
-        self.population = young_population.population
+    def cross(self, amount_of_species):
+        young_population = Population(self.quantity,self.statistical_day)
+        for i in range(amount_of_species):
+            if (i%2) == 0:
+                young_population.population[i] = cross_mc(self.population[i], self.population[i+1])
+                young_population.population[i+1] = cross_mc(self.population[i+1], self.population[i])
+
+        for i in range (amount_of_species):
+            self.population[i].genotype_matrix = young_population.population[i].genotype_matrix
+
 
 
 
