@@ -1,6 +1,6 @@
 from genotype import Genotype
 import numpy as np
-from Encoders import *
+from encoders import *
 
 
 class Population:
