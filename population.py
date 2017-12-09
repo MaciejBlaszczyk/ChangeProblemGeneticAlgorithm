@@ -4,7 +4,7 @@ from encoders import *
 
 
 class Population:
-    def __init__(self, quantity, statistical_day, coins_to_save, cross_function):
+    def __init__(self, quantity, statistical_day, coins_to_save, cross_function, mutate_function, mutation):
         self.quantity = quantity
         self.statistical_day = statistical_day
         self.population = [Genotype() for _ in range(quantity)]
@@ -12,6 +12,8 @@ class Population:
         self.coins_to_save = coins_to_save
         self.cost_matrix = [10000]
         self.cross_function = cross_function
+        self.mutation_function = mutate_function
+        self.mutation = mutation
 
     def calculate_changes_for_specimens(self, available_coins):
         for specimen in self.population:
@@ -41,18 +43,6 @@ class Population:
     def rank(self):
         self.sorted_population = sorted(self.population, key=lambda x: x.cost)
 
-    def mutate_mc(self):
-        temp = np.random.choice(self.quantity)
-        temp2 = np.random.choice(self.quantity)
-        self.mutation_mc(self.population[temp],self.population[temp2])
-
-    def mutation_mc(self, specimen_a, specimen_b):
-        row = 6
-        col = 18
-        mut = np.random.choice(col)
-        for i in range(row):
-            specimen_a.genotype_matrix[i][mut] = specimen_b.genotype_matrix[i][mut]
-
     def cross_and_choose_new_population_randomly_from_crossed_specimens(self, amount_of_species):
         coin_chosen_to_save = np.random.choice(self.coins_to_save)
         for i in range(round(len(self.sorted_population) / 2)):
@@ -62,12 +52,24 @@ class Population:
         np.random.shuffle(self.population)
         self.population = self.population[0:amount_of_species]
 
+    def mutate(self, available_coins):
+        self.mutation_function(self.population, available_coins, self.coins_to_save)
+
+    @staticmethod
+    def mutate_randomly(pop, available_coins, coins_to_save):
+        specimen_a = np.random.choice(pop)
+        specimen_b = np.random.choice(pop)
+        mut = np.random.choice(18)
+        for i in range(6):
+            specimen_a.genotype_matrix[i][mut] = specimen_b.genotype_matrix[i][mut]
+
     #TODO
     # when coin to save = 1, while loop never stops.
     # For example for value_to_exchange = 21 when we randomly take 4x5 we need just 1 (21-20=1)
-    def mutate(self, available_coins):
-        coin_chosen_to_save = np.random.choice(self.coins_to_save)
-        random_specimen = np.random.choice(self.population)
+    @staticmethod
+    def mutate_by_replacing_usage_of_important_coin_with_other_coins(pop, available_coins, coins_to_save):
+        coin_chosen_to_save = np.random.choice(coins_to_save)
+        random_specimen = np.random.choice(pop)
         random_col = np.random.choice(range(random_specimen.number_of_ways_to_give_change))
         amount_of_coins_which_are_supposed_to_be_saved = random_specimen.genotype_matrix[rows_encoder[coin_chosen_to_save]][random_col]
         value_to_exchange = amount_of_coins_which_are_supposed_to_be_saved * coin_chosen_to_save
