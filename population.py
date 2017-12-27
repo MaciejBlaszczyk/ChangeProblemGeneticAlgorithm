@@ -16,6 +16,7 @@ class Population:
         self.mutation = mutation
 
     def calculate_changes_for_specimens(self, available_coins):
+        print("Calculating changes")
         for specimen in self.population:
             specimen.calculate_change_randomly(self.statistical_day, available_coins)
 
