@@ -4,7 +4,7 @@ from encoders import *
 
 
 class Population:
-    def __init__(self, quantity, statistical_day, coins_to_save, cross_function, mutate_function, mutation):
+    def __init__(self, quantity, statistical_day, coins_to_save, cross_function, mutate_function, mutation,initial_number_of_coins,expected_quantity_of_coins):
         self.quantity = quantity
         self.statistical_day = statistical_day
         self.population = [Genotype() for _ in range(quantity)]
@@ -14,6 +14,25 @@ class Population:
         self.cross_function = cross_function
         self.mutation_function = mutate_function
         self.mutation = mutation
+        self.best_possible_specimen = Genotype()
+        self.good = 0
+
+    def first_good(self,initial_number_of_coins, expected_quantity_of_coins, coins_to_save):
+        for i in range(self.quantity):
+            self.population[i].is_good_gen(initial_number_of_coins)
+            if self.population[i].good == 1 :
+                self.best_possible_specimen = self.population[i]
+
+
+
+    def is_good(self,initial_number_of_coins, expected_quantity_of_coins, coins_to_save):
+        self.calculate_cost_for_population(coins_to_save,expected_quantity_of_coins,initial_number_of_coins)
+        self.rank()
+        for i in range(self.quantity):
+            self.population[i].is_good_gen(initial_number_of_coins)
+            if self.population[i].good == 1 and self.population[i].cost < self.best_possible_specimen.cost:
+                self.best_possible_specimen = self.population[i]
+                self.good = 1
 
     def calculate_changes_for_specimens(self, available_coins):
         print("Calculating changes")
@@ -32,9 +51,9 @@ class Population:
             print("cost:", specimen.cost)
             print("")
 
-    def calculate_cost_for_population(self, coin_to_save, expected_quantity_of_coins):
+    def calculate_cost_for_population(self, coin_to_save, expected_quantity_of_coins,initial_number_of_coins):
         for specimen in self.population:
-            specimen.calculate_cost(coin_to_save, expected_quantity_of_coins)
+            specimen.calculate_cost(coin_to_save, expected_quantity_of_coins,initial_number_of_coins)
 
     def calculate_cost_matrix_for_sorted_population(self):
         self.cost_matrix = []

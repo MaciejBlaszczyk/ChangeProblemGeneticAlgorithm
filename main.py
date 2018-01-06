@@ -22,46 +22,32 @@ def execute_algorithm(pop, pop_history):
 
 amount_of_species = 100
 available_coins = [1, 2, 5, 10, 20, 50, 100, 200]
-statistical_day = np.random.random_integers(499, size=100)
+statistical_day = np.random.random_integers(499, size=10)
 required_cost = sum(statistical_day) / 1000
 coins_to_save = [2, 5, 20, 100]
 expected_quantity_of_coins = [50, 25, 20, 10]
-max_iterations = 200
-
-cross_functions = [Population.cross_by_choosing_the_best_values, Population.cross_mc]
-mutate_functions = [Population.mutate_by_replacing_usage_of_important_coin_with_other_coins, Population.mutate_randomly]
-mutations = [True, False]
-labels = ["Intelligent Crossing + Intelligent Mutating",
-          "Intelligent Crossing + Randomly Mutating",
-          "Random Crossing + Intelligent Mutating",
-          "Random Crossing + Random Mutating",
-          "Intelligent Crossing + No Mutating",
-          "Random Crossing + No Mutating"]
-populations = []
+max_iterations = 20
+initial_number_of_coins = [60, 1000, 1000, 1000, 1000, 500, 500, 500]
 
 
-if __name__ == '__main__':
-
-    for m in mutations:
-        for cf in cross_functions:
-            for mf in mutate_functions:
-                populations.append(Population(amount_of_species, statistical_day, coins_to_save, cf, mf, m))
-                print("Creating new population")
-                populations[-1].calculate_changes_for_specimens(available_coins)
-                if not m:
-                    break
-
-    populations_history = list()
-    jobs = list()
-    [populations_history.append(Array('d', [0 for _ in range(max_iterations)])) for i in range(6)]
-    [jobs.append(Process(target=execute_algorithm, args=(populations[i], populations_history[i]))) for i in range(6)]
-    [j.start() for j in jobs]
-    [j.join() for j in jobs]
-
-    plt.figure()
-    [plt.plot(range(len(populations_history[i])), populations_history[i], label=lab) for i, lab in zip(range(6), labels)]
-    plt.axis((0, max_iterations, required_cost, populations_history[5][0]))
-    plt.legend()
-    plt.show()
+pop = Population(amount_of_species, statistical_day, coins_to_save, Population.cross_by_choosing_the_best_values, Population.mutate_randomly, True,initial_number_of_coins,expected_quantity_of_coins)
+pop.calculate_changes_for_specimens( available_coins)
+pop.first_good(initial_number_of_coins, expected_quantity_of_coins, coins_to_save)
+for i in range(max_iterations):
+    pop.calculate_cost_for_population(coins_to_save, expected_quantity_of_coins,initial_number_of_coins)
+    pop.rank()
+    pop.calculate_cost_matrix_for_sorted_population()
+    pop.cross_and_choose_new_population_randomly_from_crossed_specimens(amount_of_species)
+    if pop.mutation:
+        pop.mutate(available_coins)
+    pop.is_good(initial_number_of_coins, expected_quantity_of_coins, coins_to_save)
+    print("Iteration ", i)
+    print(min(pop.cost_matrix))
 
 
+if pop.good ==1:
+    print("\nNajlepszy osobnik spełniajacy wymagania\n\n")
+    print(pop.best_possible_specimen.genotype_matrix)
+    print("best:", pop.best_possible_specimen.cost)
+else:
+    print("Nie powstał osobnik spełniajacy wymagania")

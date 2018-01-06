@@ -9,6 +9,14 @@ class Genotype:
         self.number_of_used_bankotes_and_coins = 8
         self.genotype_matrix = np.zeros((self.number_of_used_bankotes_and_coins, self.number_of_ways_to_give_change))
         self.cost = 0
+        self.good = 1
+
+    def is_good_gen(self,initial_number_of_coins):
+        value_of_rows = np.zeros(self.number_of_used_bankotes_and_coins)
+        for i in range(self.number_of_used_bankotes_and_coins):
+            value_of_rows[i] = sum(self.genotype_matrix[i])
+            if value_of_rows[i] > initial_number_of_coins[i]:
+                self.good = 0
 
     def calculate_change_randomly(self, statistical_day, available_coins):
         for change in statistical_day:
@@ -29,7 +37,7 @@ class Genotype:
                 temp = temp + generated_value
                 self.genotype_matrix[rows_encoder[generated_value]][cols_encoder[value]] += 1
 
-    def calculate_cost(self, coins_to_save, expected_quantity_of_coins):
+    def calculate_cost(self, coins_to_save, expected_quantity_of_coins,initial_number_of_coins):
         value_of_rows = np.zeros(len(coins_to_save))
         difference = np.zeros(len(coins_to_save))
         for i in range(len(coins_to_save)):
