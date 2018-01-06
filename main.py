@@ -7,7 +7,7 @@ from multiprocessing import Process, Array
 def execute_algorithm(pop, pop_history):
     counter = 0
     while min(pop.cost_matrix) > required_cost and counter < max_iterations:
-        pop.calculate_cost_for_population(coins_to_save, expected_quantity_of_coins)
+        pop.calculate_cost_for_population()
         pop.rank()
         pop.calculate_cost_matrix_for_sorted_population()
         pop.cross_and_choose_new_population_randomly_from_crossed_specimens(amount_of_species)
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     for m in mutations:
         for cf in cross_functions:
             for mf in mutate_functions:
-                populations.append(Population(amount_of_species, statistical_day, coins_to_save, cf, mf, m))
+                populations.append(Population(amount_of_species, statistical_day, coins_to_save, cf, mf, m, expected_quantity_of_coins))
                 print("Creating new population")
                 populations[-1].calculate_changes_for_specimens(available_coins)
                 if not m:
@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     plt.figure()
     [plt.plot(range(len(populations_history[i])), populations_history[i], label=lab) for i, lab in zip(range(6), labels)]
-    plt.axis((0, max_iterations, required_cost, populations_history[5][0]))
+    plt.axis((0, max_iterations, required_cost, 1200))
     plt.legend()
     plt.show()
 

@@ -4,7 +4,7 @@ from encoders import *
 
 
 class Population:
-    def __init__(self, quantity, statistical_day, coins_to_save, cross_function, mutate_function, mutation):
+    def __init__(self, quantity, statistical_day, coins_to_save, cross_function, mutate_function, mutation, expected_quantity_of_coins):
         self.quantity = quantity
         self.statistical_day = statistical_day
         self.population = [Genotype() for _ in range(quantity)]
@@ -14,6 +14,7 @@ class Population:
         self.cross_function = cross_function
         self.mutation_function = mutate_function
         self.mutation = mutation
+        self.expected_quantity_of_coins = expected_quantity_of_coins
 
     def calculate_changes_for_specimens(self, available_coins):
         print("Calculating changes")
@@ -32,9 +33,9 @@ class Population:
             print("cost:", specimen.cost)
             print("")
 
-    def calculate_cost_for_population(self, coin_to_save, expected_quantity_of_coins):
+    def calculate_cost_for_population(self):
         for specimen in self.population:
-            specimen.calculate_cost(coin_to_save, expected_quantity_of_coins)
+            specimen.calculate_cost(self.coins_to_save, self.expected_quantity_of_coins)
 
     def calculate_cost_matrix_for_sorted_population(self):
         self.cost_matrix = []
@@ -48,7 +49,7 @@ class Population:
         coin_chosen_to_save = np.random.choice(self.coins_to_save)
         for i in range(round(len(self.sorted_population) / 2)):
             for j in range(i + 1, round(len(self.sorted_population) / 2)):
-                self.population.append(self.cross_function(self.sorted_population[i], self.sorted_population[j], coin_chosen_to_save))
+                self.population.append(self.cross_function(self.sorted_population[i], self.sorted_population[j], coin_chosen_to_save, self.expected_quantity_of_coins[self.coins_to_save.index(coin_chosen_to_save)]))
 
         np.random.shuffle(self.population)
         self.population = self.population[0:amount_of_species]
@@ -60,8 +61,8 @@ class Population:
     def mutate_randomly(pop, available_coins, coins_to_save):
         specimen_a = np.random.choice(pop)
         specimen_b = np.random.choice(pop)
-        mut = np.random.choice(18)
-        for i in range(6):
+        mut = np.random.choice(22)
+        for i in range(8):
             specimen_a.genotype_matrix[i][mut] = specimen_b.genotype_matrix[i][mut]
 
     #TODO
@@ -87,10 +88,10 @@ class Population:
         random_specimen.genotype_matrix[rows_encoder[coin_chosen_to_save]][random_col] = 0
 
     @staticmethod
-    def cross_mc(specimen_a, specimen_b, coin_chosen_to_save):
+    def cross_mc(specimen_a, specimen_b, coin_chosen_to_save, coin_quantity):
         specimen_c = Genotype()
-        rows = 6
-        col = 18
+        rows = 8
+        col = 22
         for i in range(rows):
             for j in range(int(col / 2)):
                 specimen_c.genotype_matrix[i][j] = specimen_a.genotype_matrix[i][j]
@@ -100,15 +101,14 @@ class Population:
         return specimen_c
 
     @staticmethod
-    def cross_by_choosing_the_best_values(specimenA, specimenB, coin_chosen_to_save):
+    def cross_by_choosing_the_best_values(specimenA, specimenB, coin_chosen_to_save, coin_quantity):
         temp_specimen = Genotype()
-        for k in range(18):
-            if specimenA.genotype_matrix[rows_encoder[coin_chosen_to_save]][k] > \
-                    specimenB.genotype_matrix[rows_encoder[coin_chosen_to_save]][k]:
-                for m in range(6):
+        for k in range(22):
+            if abs(specimenA.genotype_matrix[rows_encoder[coin_chosen_to_save]][k] - coin_quantity) > abs(specimenB.genotype_matrix[rows_encoder[coin_chosen_to_save]][k] - coin_quantity):
+                for m in range(8):
                     temp_specimen.genotype_matrix[m][k] = specimenB.genotype_matrix[m][k]
             else:
-                for m in range(6):
+                for m in range(8):
                     temp_specimen.genotype_matrix[m][k] = specimenA.genotype_matrix[m][k]
         return temp_specimen
 
